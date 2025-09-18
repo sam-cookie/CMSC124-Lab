@@ -20,4 +20,7 @@ data class Token(
     val line: Int
 )
 
-class Scanner
+class Scanner { 
+    print function 
+    shibal 
+}
