@@ -62,8 +62,51 @@ fun scanToken(source: String, index: Int): Pair<TokenType?, Int> {
     }
 }
 
+fun scanLiterals(source: String, index: Int): Pair<TokenType?, Int> {
+    val c = source[index]
+
+    // number literal
+    if (c.isDigit()) {
+        var length = 1
+        while (index + length < source.length && source[index + length].isDigit()) {
+            length++
+        }
+        return TokenType.NUMBER to length
+    }
+
+    // identifier or keyword
+    if (c.isLetter() || c == '_') {
+        var length = 1
+        while (index + length < source.length &&
+            (source[index + length].isLetterOrDigit() || source[index + length] == '_')
+        ) {
+            length++
+        }
+        val lexeme = source.substring(index, index + length)
+        val type = if (lexeme == "var") TokenType.VAR else TokenType.IDENTIFIER
+        return type to length
+    }
+
+    // string literal
+    if (c == '"') {
+        var length = 1
+        while (index + length < source.length && source[index + length] != '"') {
+            length++
+        }
+        return if (index + length < source.length) {
+            length++ // include closing "
+            TokenType.STRING to length
+        } else {
+            // unterminated string
+            null to 1
+        }
+    }
+
+    return null to 1
+}
+
 fun main() {
-    val source = readLine() ?: ""   
+    val source = readLine() ?: ""
 
     val tokens = mutableListOf<Token>()
     var i = 0
@@ -72,7 +115,7 @@ fun main() {
     while (i < source.length) {
         val c = source[i]
 
-        // whitespace handling 
+        // whitespace handling
         if (c == ' ' || c == '\r' || c == '\t') {
             i++
             continue
@@ -83,14 +126,25 @@ fun main() {
             continue
         }
 
-        val (type, length) = scanToken(source, i)
-        if (type != null) {
-            val lexeme = source.substring(i, i + length)
-            tokens.add(Token(type, lexeme, null, line))
+        val (litType, litLen) = scanLiterals(source, i)
+        if (litType != null) {
+            val lexeme = source.substring(i, i + litLen)
+            tokens.add(Token(litType, lexeme, null, line))
+            i += litLen
+            continue
         }
-        i += length
+
+        val (symType, symLen) = scanToken(source, i)
+        if (symType != null) {
+            val lexeme = source.substring(i, i + symLen)
+            tokens.add(Token(symType, lexeme, null, line))
+        }
+        i += symLen
     }
 
+    tokens.add(Token(TokenType.EOF, "", null, line))
+
+    // print results
     for (token in tokens) {
         println(token)
     }
