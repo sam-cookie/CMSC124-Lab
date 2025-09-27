@@ -26,41 +26,25 @@ fun scanToken(source: String, index: Int): Pair<TokenType?, Int> {
     val c = source[index]
     val next = if (index + 1 < source.length) source[index + 1] else '\u0000'
 
-    return if (c == '(') {
-        TokenType.LEFT_PAREN to 1
-    } else if (c == ')') {
-        TokenType.RIGHT_PAREN to 1
-    } else if (c == '{') {
-        TokenType.LEFT_BRACE to 1
-    } else if (c == '}') {
-        TokenType.RIGHT_BRACE to 1
-    } else if (c == '+') {
-        TokenType.PLUS to 1
-    } else if (c == '-') {
-        TokenType.MINUS to 1
-    } else if (c == '*') {
-        TokenType.TIMES to 1
-    } else if (c == '/') {
-        TokenType.DIVIDE to 1
-    } else if (c == '=') {
-        if (next == '=') TokenType.EQUALTO to 2
-        else TokenType.EQUALS to 1
-    } else if (c == ',') {
-        TokenType.COMMA to 1
-    } else if (c == ':') {
-        TokenType.COLON to 1
-    } else if (c == '<') {
-        if (next == '=') TokenType.LESS_THAN_EQUAL to 2
-        else TokenType.LESS_THAN to 1
-    } else if (c == '>') {
-        if (next == '=') TokenType.GREATER_THAN_EQUAL to 2
-        else TokenType.GREATER_THAN to 1
-    } else if (c == '"') { //di ko pa to naayos di ko gets? 
-        TokenType.DOUBLE_QUOTE to 1
-    } else {
-        null to 1 
+    return when (c) {
+        '(' -> TokenType.LEFT_PAREN to 1
+        ')' -> TokenType.RIGHT_PAREN to 1
+        '{' -> TokenType.LEFT_BRACE to 1
+        '}' -> TokenType.RIGHT_BRACE to 1
+        '+' -> TokenType.PLUS to 1
+        '-' -> TokenType.MINUS to 1
+        '*' -> TokenType.TIMES to 1
+        '/' -> TokenType.DIVIDE to 1
+        '=' -> if (next == '=') TokenType.EQUALTO to 2 else TokenType.EQUALS to 1
+        ',' -> TokenType.COMMA to 1
+        ':' -> TokenType.COLON to 1
+        '<' -> if (next == '=') TokenType.LESS_THAN_EQUAL to 2 else TokenType.LESS_THAN to 1
+        '>' -> if (next == '=') TokenType.GREATER_THAN_EQUAL to 2 else TokenType.GREATER_THAN to 1
+        '"' -> TokenType.DOUBLE_QUOTE to 1 // still placeholder for string handling
+        else -> null to 1
     }
 }
+
 
 fun scanLiterals(source: String, index: Int): Pair<TokenType?, Int> {
     val c = source[index]
