@@ -71,8 +71,7 @@ fun scanLiterals(source: String, index: Int, line: Int): Pair<TokenType?, Int> {
         while (index + length < source.length && source[index + length].isDigit()) {
             length++
         }
-
-        // for fractional parts
+    
         if (index + length < source.length && source[index + length] == '.') {
             if (index + length + 1 < source.length && source[index + length + 1].isDigit()) {
                 length++ // consume '.'
@@ -168,11 +167,7 @@ fun main() {
 
          // line comments
         if (i + 1 < source.length && source.substring(i, i + 2) == "//") {
-            val closing = source.indexOf("//", i + 2) 
-            val endComment = if (closing != -1) closing + 2 else source.length
-
-            val lexeme = source.substring (i, endComment)
-
+            val endComment = source.indexOf('\n', i + 2).let { if (it == -1) source.length else it }
             i = endComment
             continue
         }
