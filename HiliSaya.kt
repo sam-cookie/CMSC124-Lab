@@ -2,7 +2,7 @@ enum class TokenType {
 
     // single token
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, PLUS, MINUS, TIMES, DIVIDE, EQUALS,
-    COMMA, COLON, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, LESS_THAN, GREATER_THAN, EQUALTO, NOT_EQUAL, DOUBLE_QUOTE,
+    COMMA, COLON, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, LESS_THAN, GREATER_THAN, EQUALTO, NOT_EQUAL, NOT, DOUBLE_QUOTE,
 
     // literals 
     IDENTIFIER, NUMBER, STRING,
@@ -51,7 +51,7 @@ fun scanToken(source: String, index: Int): Pair<TokenType?, Int> {
         '*' -> TokenType.TIMES to 1
         '/' -> TokenType.DIVIDE to 1
         '=' -> if (next == '=') TokenType.EQUALTO to 2 else TokenType.EQUALS to 1
-        '!' -> if (next == '=') TokenType.NOT_EQUAL to 2  
+        '!' -> if (next == '=') TokenType.NOT_EQUAL to 2 else TokenType.NOT to 1
         ',' -> TokenType.COMMA to 1
         ':' -> TokenType.COLON to 1
         '<' -> if (next == '=') TokenType.LESS_THAN_EQUAL to 2 else TokenType.LESS_THAN to 1
@@ -62,7 +62,7 @@ fun scanToken(source: String, index: Int): Pair<TokenType?, Int> {
 }
 
 
-fun scanLiterals(source: String, index: Int): Pair<TokenType?, Int> {
+fun scanLiterals(source: String, index: Int, line: Int): Pair<TokenType?, Int> {
     val c = source[index]
 
     // number literal
@@ -71,6 +71,22 @@ fun scanLiterals(source: String, index: Int): Pair<TokenType?, Int> {
         while (index + length < source.length && source[index + length].isDigit()) {
             length++
         }
+
+        // for fractional parts
+        if (index + length < source.length && source[index + length] == '.') {
+            if (index + length + 1 < source.length && source[index + length + 1].isDigit()) {
+                length++ // consume '.'
+                while (index + length < source.length && source[index + length].isDigit()) {
+                    length++
+                }
+            }
+        }
+
+        val numStart = source.substring(index, index + length)
+        if (index + length <source.length && (source[index + length].isLetter() || source[index + length] == '_')) {
+            println("error with starting number '$numStart' in identifier name at line $line")
+        } 
+
         return TokenType.NUMBER to length
     }
 
@@ -81,13 +97,20 @@ fun scanLiterals(source: String, index: Int): Pair<TokenType?, Int> {
             (source[index + length].isLetterOrDigit() || source[index + length] == '_')
         ) {
             length++
+            
+            // check for special characters
+            if (index + length < source.length) { 
+                val specialChar = source[index + length]
+                if (!specialChar.isWhitespace() && !specialChar.isLetterOrDigit() && specialChar != '_') {
+                    println("error '$specialChar' at line $line")
+                }
+            }
         }
+
         val lexeme = source.substring(index, index + length)
         val type = keywords[lexeme] ?: TokenType.IDENTIFIER
         return type to length
-    } else {
-        println(error)
-    }
+    } 
 
     // string literal
     if (c == '"') {
@@ -108,6 +131,7 @@ fun scanLiterals(source: String, index: Int): Pair<TokenType?, Int> {
 }
 
 fun main() {
+    print("Check your input: ")
     val source = readLine() ?: ""
 
     val tokens = mutableListOf<Token>()
@@ -153,10 +177,14 @@ fun main() {
             continue
         }
 
-        val (litType, litLen) = scanLiterals(source, i)
+        val (litType, litLen) = scanLiterals(source, i, line)
         if (litType != null) {
             val lexeme = source.substring(i, i + litLen)
-            tokens.add(Token(litType, lexeme, null, line))
+            val literal = when (litType) {
+                TokenType.NUMBER -> lexeme.toDouble()
+                else -> null
+            }
+            tokens.add(Token(litType, lexeme, literal, line))
             i += litLen
             continue
         }
