@@ -1,14 +1,14 @@
 enum class TokenType {
 
     // single token
-    LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, PLUS, MINUS, TIMES, DIVIDE, EQUALS, 
-    COMMA, DASH, COLON, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, LESS_THAN, GREATER_THAN, EQUALTO, DOUBLE_QUOTE,
+    LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, PLUS, MINUS, TIMES, DIVIDE, EQUALS,
+    COMMA, COLON, LESS_THAN_EQUAL, GREATER_THAN_EQUAL, LESS_THAN, GREATER_THAN, EQUALTO, NOT_EQUAL, DOUBLE_QUOTE,
 
     // literals 
     IDENTIFIER, NUMBER, STRING,
 
     // keywords
-    VAR, CLASS, FUNCTION, RETURN, PRINT,
+    VAR, FUNCTION, RETURN, PRINT, IF, ELSE, WHILE, BREAK, CONTINUE, TRUE, FALSE, NULL,
 
     //End
     EOF
@@ -23,11 +23,17 @@ data class Token(
 
 val keywords = mapOf (
         "var" to TokenType.VAR,
-        "class" to TokenType.CLASS,
         "func" to TokenType.FUNCTION,
         "balik" to TokenType.RETURN,
-        "gawas" to TokenType.PRINT
-
+        "gawas" to TokenType.PRINT,
+        "kung" to TokenType.IF,
+        "ugdi" to TokenType.ELSE,
+        "samtang" to TokenType.WHILE,
+        "untat" to TokenType.BREAK,
+        "padayon" to TokenType.CONTINUE,
+        "tuod" to TokenType.TRUE,
+        "atik" to TokenType.FALSE,
+        "waay" to TokenType.NULL
     )
 
 
@@ -45,6 +51,7 @@ fun scanToken(source: String, index: Int): Pair<TokenType?, Int> {
         '*' -> TokenType.TIMES to 1
         '/' -> TokenType.DIVIDE to 1
         '=' -> if (next == '=') TokenType.EQUALTO to 2 else TokenType.EQUALS to 1
+        '!' -> if (next == '=') TokenType.NOT_EQUAL to 2  
         ',' -> TokenType.COMMA to 1
         ':' -> TokenType.COLON to 1
         '<' -> if (next == '=') TokenType.LESS_THAN_EQUAL to 2 else TokenType.LESS_THAN to 1
@@ -78,6 +85,8 @@ fun scanLiterals(source: String, index: Int): Pair<TokenType?, Int> {
         val lexeme = source.substring(index, index + length)
         val type = keywords[lexeme] ?: TokenType.IDENTIFIER
         return type to length
+    } else {
+        println(error)
     }
 
     // string literal
