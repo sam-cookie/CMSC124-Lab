@@ -8,7 +8,7 @@ enum class TokenType {
     IDENTIFIER, NUMBER, STRING,
 
     // keywords
-    VAR, CLASS, FUNCTION, RETURN,
+    VAR, CLASS, FUNCTION, RETURN, PRINT
 
     //End
     EOF
@@ -26,6 +26,7 @@ val keywords = mapOf (
         "class" to TokenType.CLASS,
         "func" to TokenType.FUNCTION,
         "balik" to TokenType.RETURN
+        "gawas" to TokenType.PRINT
 
     )
 
