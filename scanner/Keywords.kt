@@ -1,7 +1,7 @@
 package scanner
 
 val keywords = mapOf(
-    "var" to TokenType.VAR,
+    "bar" to TokenType.VAR,
     "func" to TokenType.FUNCTION,
     "balik" to TokenType.RETURN,
     "gawas" to TokenType.PRINT,

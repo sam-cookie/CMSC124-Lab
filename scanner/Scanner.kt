@@ -112,8 +112,8 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
                 continue
             }
 
-            if (index + 2 < source.length && source.substring(index, index + 3) == "///") {
-                val closing = source.indexOf("///", index + 3)
+            if (index + 2 < source.length && source.substring(index, index + 3) == "/*") {
+                val closing = source.indexOf("*/", index + 3)
                 val endComment = if (closing != -1) closing + 3 else source.length
                 val lexeme = source.substring(index, endComment)
                 line += lexeme.count { it == '\n' }
