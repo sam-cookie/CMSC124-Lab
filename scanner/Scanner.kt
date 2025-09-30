@@ -50,6 +50,7 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
             val numStart = source.substring(index, index + length)
             if (index + length < source.length && (source[index + length].isLetter() || source[index + length] == '_')) {
                 println("error with starting number '$numStart' in identifier name at line $line")
+                return null to length
             }
 
             return TokenType.NUMBER to length
@@ -112,9 +113,9 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
                 continue
             }
 
-            if (index + 2 < source.length && source.substring(index, index + 3) == "/*") {
-                val closing = source.indexOf("*/", index + 3)
-                val endComment = if (closing != -1) closing + 3 else source.length
+            if (index + 1 < source.length && source.substring(index, index + 2) == "/*") {
+                val closing = source.indexOf("*/", index + 2)
+                val endComment = if (closing != -1) closing + 2 else source.length
                 val lexeme = source.substring(index, endComment)
                 line += lexeme.count { it == '\n' }
                 index = endComment
@@ -130,14 +131,14 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
             }
 
             if (isLiteral(source, index, line, tokens)) {
-                continue
+                break
             }
             if (isSymbol(source, index, line, tokens)) {
-                continue
+                break
             }
 
             index++
-        }
+        }        
 
         tokens.add(Token(TokenType.EOF, "", null, line))
 
@@ -146,12 +147,14 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
         }
     }
 
+
+
     fun isLiteral(source: String, index: Int, line: Int, tokens: MutableList<Token>): Boolean {
         val (litType, litLen) = scanLiterals(source, index, line)
         if (litType != null) {
             val lexeme = source.substring(index, index + litLen)
             val literal = when (litType) {
-                TokenType.NUMBER -> lexeme.toDouble()
+                TokenType.NUMBER -> lexeme.toDoubleOrNull()
                 TokenType.STRING -> lexeme.substring(1, lexeme.length - 1)
                 else -> null
             }
