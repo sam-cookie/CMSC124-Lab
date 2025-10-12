@@ -56,6 +56,24 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
             return TokenType.NUMBER to length
         }
 
+        // string literal
+        if (c == '"') {
+            var length = 1
+            while (index + length < source.length && source[index + length] != '"') {
+                length++
+            }
+            
+            if (index + length < source.length) {
+                length++
+                return TokenType.STRING to length
+            
+            } else {
+                println("""[Line $line] Error at end: Expect '"' after expression""")
+                return null to length
+            }
+            
+        }
+        
         // identifier or keyword
         if (c.isLetter() || c == '_') {
             var length = 1
@@ -73,20 +91,6 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
             val lexeme = source.substring(index, index + length)
             val type = keywords[lexeme] ?: TokenType.IDENTIFIER
             return type to length
-        }
-
-        // string literal
-        if (c == '"') {
-            var length = 1
-            while (index + length < source.length && source[index + length] != '"') {
-                length++
-            }
-            return if (index + length < source.length) {
-                length++
-                TokenType.STRING to length
-            } else {
-                null to 1
-            }
         }
 
         return null to 1
@@ -111,12 +115,15 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
                 continue
             }
 
-            if (index + 2 < source.length && source.substring(index, index + 3) == "/*") {
-                val closing = source.indexOf("*/", index + 3)
-                val endComment = if (closing != -1) closing + 3 else source.length
+            if (index + 2 < source.length && source.substring(index, index + 2) == "/*") {
+                val closing = source.indexOf("*/", index + 2)
+                val endComment = if (closing != -1) closing + 2 else source.length
                 val lexeme = source.substring(index, endComment)
                 line += lexeme.count { it == '\n' }
                 index = endComment
+                if (closing == -1) {
+                    println("[Line $line] Error at end: Expect '*/' after a comment")
+                }
                 continue
             }
 
@@ -128,15 +135,15 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
                 continue
             }
 
-            if (isSymbol(source, index, line, tokens)) {
-                val (_, symLen) = scanToken(source, index)
-                index += symLen
-                continue
-            }
-
             if (isLiteral(source, index, line, tokens)) {
                 val (_, litLen) = scanLiterals(source, index, line)
                 index += litLen
+                continue
+            }
+
+            if (isSymbol(source, index, line, tokens)) {
+                val (_, symLen) = scanToken(source, index)
+                index += symLen
                 continue
             }
 
