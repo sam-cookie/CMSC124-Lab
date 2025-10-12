@@ -161,6 +161,9 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
             val literal = when (litType) {
                 TokenType.NUMBER -> lexeme.toDouble()
                 TokenType.STRING -> lexeme.substring(1, lexeme.length - 1)
+                TokenType.TRUE -> "tuod"
+                TokenType.FALSE -> "atik"
+                TokenType.NULL -> "waay"
                 else -> null
             }
             tokens.add(Token(litType, lexeme, literal, line))
