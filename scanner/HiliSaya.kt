@@ -1,8 +1,9 @@
 package scanner
 
 fun main() {
+    
     while (true) {
-        print("Check your input: ")
+        println("Check your input: ")
         val source = readLine() ?: ""
 
         val tokens = mutableListOf<Token>()
@@ -11,6 +12,5 @@ fun main() {
         var length = 0
         val scanner = Scanner(source, index, line, length)
         scanner.scanOtherCharacters(source, index, line, length)
-
     }
 }
