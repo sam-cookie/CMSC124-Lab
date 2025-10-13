@@ -93,8 +93,8 @@ Identifiers:
 
 Comments:
 -Line and block comments are supported
-    Syntax for line comments : // comment // 
-    Syntax for block comments: /// comment ///
+    Syntax for line comments : // comment 
+    Syntax for block comments: ///$ comment $///
 
 Syntax Style:
 -Whitespace is not important, except that newlines terminates statements
@@ -105,43 +105,44 @@ Syntax Style:
 
 Syntax Examples:
 Variable declaration
-	var age = 20
-	var pangalan = “Sir Ren”
+	bar age = 20
+	bar pangalan = “Sir Ren”
 
 Function 
-	func greet(name):
+	punc greet(name):
 		gawas(“hello, ” + name)
 	
 	greet(“Sir Ren”)
 
 With return value
-	func add(a, b) :
+	punc add(a, b) :
 		balik a + b
+        untat
 	
 	var sum = add(6, 7)
 	gawas(sum)
 
 Conditional 
-	var age = 20
+	bar age = 20
 	kung (edad == 20 ):
 		gawas(“Welcome to your 20s!”)
 	kungdi (edad >= 30):
 		gawas(“Pangasawa na oy”)
-	 ugdi:
+	ugdi:
 		gawas(“Bata pa ka chuy”)
 
 Arrays and indexing 
-	var lista = [1, 2, 3, 4]
+	bar lista = [1, 2, 3, 4]
 	gawas(lista[0]) // 1
 
 Sample Code:
-var minimumAge = 18
+bar minimumAge = 18
 
-func userGreeting(name):
+punc userGreeting(name):
     gawas(“Hello, ” +	name + “!”)
     checkValidity(18)
 
-func checkValidity(userAge):
+punc checkValidity(userAge):
 	kung (age >= 18):
 		gawas(“pwede na sa dating app!”)
 	ugdi:

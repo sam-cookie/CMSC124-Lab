@@ -155,7 +155,7 @@ fun main() {
             continue
         }
 
-        // block comments
+         // block comments
         if (i + 2 < source.length && source.substring(i, i + 3) == "///") {
             val closing = source.indexOf("///", i + 3) 
             val endComment = if (closing != -1) closing + 3 else source.length
@@ -171,11 +171,7 @@ fun main() {
 
          // line comments
         if (i + 1 < source.length && source.substring(i, i + 2) == "//") {
-            val closing = source.indexOf("//", i + 2) 
-            val endComment = if (closing != -1) closing + 2 else source.length
-
-            val lexeme = source.substring (i, endComment)
-
+            val endComment = source.indexOf('\n', i + 2).let { if (it == -1) source.length else it }
             i = endComment
             continue
         }
