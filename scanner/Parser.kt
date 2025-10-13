@@ -1,60 +1,63 @@
-package scanner
+package parser
 
-// ===== PARSER CLASS =====
 class Parser(private val tokens: List<Token>) {
 
     private var current = 0
 
-    // --- Entry point ---
-    fun parse(): List<ASTNode.Stmt> {
-        val statements = mutableListOf<ASTNode.Stmt>()
-        // TODO: implement main parsing loop
+    // Entry point: parse a program
+    fun parse(): List<Stmt> {
+        val statements = mutableListOf<Stmt>()
+        while (!isAtEnd()) {
+            statements.add(declaration())
+        }
         return statements
     }
 
-    // ======== STATEMENTS ========
-    private fun statement(): ASTNode.Stmt? { return null }
+    // Parse declarations (like `bar x = 5;` or `func foo() ...`)
+    private fun declaration(): Stmt {
+        // TODO: implement according to your grammar
+        return statement()
+    }
 
-    private fun simpleStmt(): ASTNode.Stmt? { return null }
-    private fun compoundStmt(): ASTNode.Stmt? { return null }
+    // Parse statements
+    private fun statement(): Stmt {
+        // TODO: handle printing, if, while, etc.
+        return expressionStatement()
+    }
 
-    private fun varDeclaration(): ASTNode.Stmt.VarDeclaration? { return null }
-    private fun printStmt(): ASTNode.Stmt.PrintStmt? { return null }
-    private fun breakStmt(): ASTNode.Stmt.Break? { return null }
-    private fun continueStmt(): ASTNode.Stmt.Continue? { return null }
-    private fun returnStmt(): ASTNode.Stmt.ReturnStmt? { return null }
+    private fun expressionStatement(): Stmt {
+        val expr = expression()
+        return ExpressionStmt(expr)
+    }
 
-    private fun functionDeclaration(): ASTNode.Stmt.FunctionDeclaration? { return null }
-    private fun ifStmt(): ASTNode.Stmt.IfStmt? { return null }
-    private fun elifClause(): ASTNode.Stmt.ElifClause? { return null }
-    private fun elseClause(): List<ASTNode.Stmt>? { return null }
-    private fun whileStmt(): ASTNode.Stmt.WhileStmt? { return null }
-    private fun forStmt(): ASTNode.Stmt.ForStmt? { return null }
+    // Parse expressions
+    private fun expression(): Expr {
+        // TODO: implement expression grammar (logical_or, equality, etc.)
+        return LiteralExpr(null)
+    }
 
-    // ======== EXPRESSIONS ========
-    private fun expression(): ASTNode.Expr? { return null }
-    private fun logicalOr(): ASTNode.Expr? { return null }
-    private fun logicalAnd(): ASTNode.Expr? { return null }
-    private fun equality(): ASTNode.Expr? { return null }
-    private fun comparison(): ASTNode.Expr? { return null }
-    private fun term(): ASTNode.Expr? { return null }
-    private fun factor(): ASTNode.Expr? { return null }
-    private fun unary(): ASTNode.Expr? { return null }
-    private fun primary(): ASTNode.Expr? { return null }
+    // Utility functions
+    private fun match(vararg types: TokenType): Boolean {
+        for (type in types) {
+            if (check(type)) {
+                advance()
+                return true
+            }
+        }
+        return false
+    }
 
-    private fun arrayLiteral(): ASTNode.Expr.ArrayLiteral? { return null }
-    private fun funcCall(callee: ASTNode.Expr): ASTNode.Expr.Call? { return null }
+    private fun check(type: TokenType): Boolean {
+        if (isAtEnd()) return false
+        return peek().type == type
+    }
 
-    private fun arguments(): List<ASTNode.Expr>? { return null }
-    private fun parameters(): List<Token>? { return null }
+    private fun advance(): Token {
+        if (!isAtEnd()) current++
+        return previous()
+    }
 
-    // ======== UTILITIES ========
-    private fun match(vararg types: TokenType): Boolean { return false }
-    private fun check(type: TokenType): Boolean { return false }
-    private fun advance(): Token { return tokens[current++] }
-    private fun isAtEnd(): Boolean { return current >= tokens.size }
-    private fun peek(): Token { return tokens[current] }
-    private fun previous(): Token { return tokens[current - 1] }
-    private fun consume(type: TokenType, message: String): Token { return tokens[current++] }
-    private fun error(token: Token, message: String) { /* TODO */ }
+    private fun isAtEnd(): Boolean = peek().type == TokenType.EOF
+    private fun peek(): Token = tokens[current]
+    private fun previous(): Token = tokens[current - 1]
 }
