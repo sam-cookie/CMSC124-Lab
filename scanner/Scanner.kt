@@ -1,6 +1,13 @@
 package scanner
 
-class Scanner(source: String, index:Int, line:Int, length:Int) {
+class Scanner(
+    private val source: String,
+    private var index: Int = 0,
+    private var line: Int = 1,
+    private var length: Int = 0
+) {
+    
+    private val tokens = mutableListOf<Token>()
 
     fun scanToken(source: String, index: Int): Pair<TokenType?, Int> {
         val c = source[index]
@@ -62,18 +69,16 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
             while (index + length < source.length && source[index + length] != '"') {
                 length++
             }
-            
+
             if (index + length < source.length) {
                 length++
                 return TokenType.STRING to length
-            
             } else {
                 println("""[Line $line] Error at end: Expect '"' after expression""")
                 return null to length
             }
-            
         }
-        
+
         // identifier or keyword
         if (c.isLetter() || c == '_') {
             var length = 1
@@ -96,10 +101,10 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
         return null to 1
     }
 
-    fun scanOtherCharacters(source: String, startIndex: Int, startLine: Int, length: Int){
+    fun scanOtherCharacters(source: String, startIndex: Int, startLine: Int, length: Int) {
         var index = startIndex
         var line = startLine
-        val tokens = mutableListOf<Token>()
+        tokens.clear() // reset before scanning
 
         while (index < source.length) {
             val c = source[index]
@@ -130,7 +135,6 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
             if (index + 1 < source.length && source.substring(index, index + 2) == "//") {
                 val closing = source.indexOf("//", index + 2)
                 val endComment = if (closing != -1) closing + 2 else source.length
-                val lexeme = source.substring(index, endComment)
                 index = endComment
                 continue
             }
@@ -147,18 +151,14 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
                 continue
             }
 
-            if (c != '"'){
+            if (c != '"') {
                 println("error '$c' at line $line")
             }
-            
+
             index++
         }
 
         tokens.add(Token(TokenType.EOF, "", null, line))
-
-        for (token in tokens) {
-            println(token)
-        }
     }
 
     fun isLiteral(source: String, index: Int, line: Int, tokens: MutableList<Token>): Boolean {
@@ -188,5 +188,10 @@ class Scanner(source: String, index:Int, line:Int, length:Int) {
         }
         return false
     }
-    
+
+    fun scanTokens(): List<Token> {
+        tokens.clear()
+        scanOtherCharacters(source, 0, 1, source.length)
+        return tokens
+    }
 }
