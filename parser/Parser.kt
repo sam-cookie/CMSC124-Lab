@@ -5,14 +5,34 @@ class Parser(private val tokens: List<Token>) {
     private var current = 0
 
     fun parse(): Expr {
-        // println("Parser received ${tokens.size} tokens.")
-        // tokens.forEach { println(it) } // temporary debug
-        return expression() // entry point of the parser
+        return expression()
     }
 
-    // expression -> equality
+    // expression -> logical_or
     private fun expression(): Expr {
-        return equality()
+        return logicalOr()
+    }
+
+    // logical_or -> logical_and { "||" logical_and }
+    private fun logicalOr(): Expr {
+        var expr = logicalAnd()
+        while (match(TokenType.OR)) {
+            val operator = previous()
+            val right = logicalAnd()
+            expr = Expr.Binary(expr, operator, right)
+        }
+        return expr
+    }
+
+    // logical_and -> equality { "&&" equality }
+    private fun logicalAnd(): Expr {
+        var expr = equality()
+        while (match(TokenType.AND)) {
+            val operator = previous()
+            val right = equality()
+            expr = Expr.Binary(expr, operator, right)
+        }
+        return expr
     }
 
     // equality -> comparison { "==" | "!=" comparison }
@@ -82,7 +102,6 @@ class Parser(private val tokens: List<Token>) {
             return Expr.Literal(previous().lexeme)
         }
 
-        // handle grouping expressions: ( expression )
         if (match(TokenType.LEFT_PAREN)) {
             val expr = expression()
             consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
