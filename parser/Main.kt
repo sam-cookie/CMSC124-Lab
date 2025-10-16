@@ -8,8 +8,8 @@ fun main() {
     while (true) {
         print("> ")
         val line = readlnOrNull() ?: break
-        if (line.trim() == "humana") break
-        if (line.isBlank()) continue
+        if (line.trim() == "humana") break 
+        if (line.isBlank()) continue // pwede mn break din dayon for eof
 
         val scanner = Scanner(line)
         val tokens = scanner.scanTokens()

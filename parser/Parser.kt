@@ -7,32 +7,12 @@ class Parser(private val tokens: List<Token>) {
     fun parse(): Expr {
         // println("Parser received ${tokens.size} tokens.")
         // tokens.forEach { println(it) } // temporary debug
-        return expression()
+        return expression() // entry point of the parser
     }
 
-    // expression -> logical_or
-    private fun expression(): Expr = logicalOr()
-
-    // logical_or -> logical_and { "||" logical_and }
-    private fun logicalOr(): Expr {
-        var expr = logicalAnd()
-        while (match(TokenType.OR)) {
-            val operator = previous()
-            val right = logicalAnd()
-            expr = Expr.Binary(expr, operator, right)
-        }
-        return expr
-    }
-
-    // logical_and -> equality { "&&" equality }
-    private fun logicalAnd(): Expr {
-        var expr = equality()
-        while (match(TokenType.AND)) {
-            val operator = previous()
-            val right = equality()
-            expr = Expr.Binary(expr, operator, right)
-        }
-        return expr
+    // expression -> equality
+    private fun expression(): Expr {
+        return equality()
     }
 
     // equality -> comparison { "==" | "!=" comparison }
@@ -92,12 +72,17 @@ class Parser(private val tokens: List<Token>) {
         return primary()
     }
 
-    // primary -> NUMBER | "(" expression ")"
+    // primary -> NUMBER | STRING | TRUE | FALSE | NULL | IDENTIFIER | "(" expression ")"
     private fun primary(): Expr {
-        if (match(TokenType.NUMBER, TokenType.TRUE, TokenType.FALSE, TokenType.NULL)) {
+        if (match(TokenType.NUMBER, TokenType.STRING, TokenType.TRUE, TokenType.FALSE, TokenType.NULL)) {
             return Expr.Literal(previous().literal)
         }
 
+        if (match(TokenType.IDENTIFIER)) {
+            return Expr.Literal(previous().lexeme)
+        }
+
+        // handle grouping expressions: ( expression )
         if (match(TokenType.LEFT_PAREN)) {
             val expr = expression()
             consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
