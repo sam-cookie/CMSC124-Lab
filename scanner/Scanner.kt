@@ -25,8 +25,8 @@ class Scanner(
             '%' -> if (next == '=') TokenType.MODULO_ASSIGN to 2 else TokenType.MODULO to 1
             '=' -> if (next == '=') TokenType.EQUALTO to 2 else TokenType.EQUALS to 1
             '!' -> if (next == '=') TokenType.NOT_EQUAL to 2 else TokenType.NOT to 1
-            '&' -> if (next == '&') TokenType.AND to 2 else null to 1
-            '|' -> if (next == '|') TokenType.OR to 2 else null to 1
+            '&' -> if (next == '&') TokenType.LOGICAL_AND to 2 else TokenType.AND to 1
+            '|' -> if (next == '|') TokenType.LOGICAL_OR to 2 else TokenType.OR to 1
             ',' -> TokenType.COMMA to 1
             ':' -> TokenType.COLON to 1
             '<' -> if (next == '=') TokenType.LESS_THAN_EQUAL to 2 else TokenType.LESS_THAN to 1

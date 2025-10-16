@@ -16,7 +16,7 @@ class Parser(private val tokens: List<Token>) {
     // logical_or -> logical_and { "||" logical_and }
     private fun logicalOr(): Expr {
         var expr = logicalAnd()
-        while (match(TokenType.OR)) {
+        while (match(TokenType.LOGICAL_OR)) {
             val operator = previous()
             val right = logicalAnd()
             expr = Expr.Binary(expr, operator, right)
@@ -27,7 +27,7 @@ class Parser(private val tokens: List<Token>) {
     // logical_and -> equality { "&&" equality }
     private fun logicalAnd(): Expr {
         var expr = equality()
-        while (match(TokenType.AND)) {
+        while (match(TokenType.LOGICAL_AND)) {
             val operator = previous()
             val right = equality()
             expr = Expr.Binary(expr, operator, right)
@@ -112,26 +112,49 @@ class Parser(private val tokens: List<Token>) {
     }
 
     private fun match(vararg types: TokenType): Boolean {
-        for (type in types) {
-            if (check(type)) {
-                advance()
-                return true
-            }
+    for (type in types) {
+        if (check(type)) {
+            advance()
+            return true
         }
-        return false
     }
+    return false
+}
 
+    // ensures the next token is of the expected type
     private fun consume(type: TokenType, message: String) {
-        if (check(type)) { advance(); return }
+        if (check(type)) {
+            advance()
+            return
+        }
         throw error(peek(), message)
     }
 
-    private fun check(type: TokenType) = !isAtEnd() && peek().type == type
-    private fun advance(): Token = tokens[current++]
-    private fun isAtEnd() = peek().type == TokenType.EOF
-    private fun peek(): Token = tokens[current]
-    private fun previous(): Token = tokens[current - 1]
+    // returns true if current token matches given type and not at end
+    private fun check(type: TokenType): Boolean {
+        return !isAtEnd() && peek().type == type
+    }
+
+    // moves to next token and returns the previous one
+    private fun advance(): Token {
+        if (!isAtEnd()) current++
+        return previous()
+    }
+
+    private fun isAtEnd(): Boolean {
+        return peek().type == TokenType.EOF
+    }
+
+    private fun peek(): Token {
+        return tokens[current]
+    }
+
+    private fun previous(): Token {
+        return tokens[current - 1]
+    }
+
     private fun error(token: Token, message: String): RuntimeException {
         return RuntimeException("[line ${token.line}] Error at '${token.lexeme}': $message")
     }
+
 }
